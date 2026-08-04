@@ -1,112 +1,209 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estudio</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Sesiones Fotográficas</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --border: #e2e8f0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .form-container {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .session-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .session-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .session-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .session-text {
+      font-size: 16px;
+      word-break: break-word;
+    }
+
+    .paid-badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+
+    .paid {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+
+    .pending {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-action {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px 8px;
+      color: #64748b;
+    }
+
+    .btn-action:hover {
+      color: var(--text);
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>Blog de Lógica</h1>
-    </header>
+  <h1>📷 Sesiones Fotográficas</h1>
 
-    <section>
-        <article>
-            <h2>Título de un post</h2>
-            <p>Descripción del post</p>
-            <img src="https://s1.significados.com/foto/logica-og.jpg?class=ogImageWide" width="500px" alt="">
-        </article>
-        <article>
-            <h2>Título de un post</h2>
-            <p>Descripción del post</p>
-            <img src="https://s1.significados.com/foto/logica-og.jpg?class=ogImageWide" width="500px" alt="">
-        </article>
-        <article>
-            <h2>Título de un post</h2>
-            <p>Descripción del post</p>
-            <img src="https://s1.significados.com/foto/logica-og.jpg?class=ogImageWide" width="500px" alt="">
-        </article>
-        <article>
-            <h2>Título de un post</h2>
-            <p>Descripción del post</p>
-            <img src="https://s1.significados.com/foto/logica-og.jpg?class=ogImageWide" width="500px" alt="">
-        </article>
+  <div class="form-container">
+    <input type="text" id="sessionInput" placeholder="Ej: Sesión retrato - María" />
+    <button onclick="addSession()">Agregar</button>
+  </div>
 
-    </section>
+  <ul class="session-list" id="sessionList"></ul>
 
+  <script>
+    let sessions = JSON.parse(localStorage.getItem('photo_sessions')) || [];
 
+    function saveAndRender() {
+      localStorage.setItem('photo_sessions', JSON.stringify(sessions));
+      renderList();
+    }
 
+    function addSession() {
+      const input = document.getElementById('sessionInput');
+      const title = input.value.trim();
+      if (!title) return;
 
+      sessions.push({
+        id: Date.now(),
+        title: title,
+        isPaid: false
+      });
 
+      input.value = '';
+      saveAndRender();
+    }
 
+    function togglePaid(id) {
+      sessions = sessions.map(item => 
+        item.id === id ? { ...item, isPaid: !item.isPaid } : item
+      );
+      saveAndRender();
+    }
 
+    function editSession(id) {
+      const item = sessions.find(s => s.id === id);
+      const newTitle = prompt("Editar nombre de la sesión:", item.title);
+      if (newTitle !== null && newTitle.trim() !== "") {
+        item.title = newTitle.trim();
+        saveAndRender();
+      }
+    }
 
-    <section>
-        <table class="TablaProductos">
-            <tr>
-                <th>Producto</th>
-                <th>Precio</th>
-            </tr>
-            <tr>
-                <td>Leche</td>
-                <td>$ 14.99</td>
-            </tr>
-            <tr>
-                <td>Mantequilla</td>
-                <td>$ 20.99</td>
-            </tr>
-        </table>
+    function deleteSession(id) {
+      if (confirm("¿Seguro que deseas eliminar esta sesión?")) {
+        sessions = sessions.filter(s => s.id !== id);
+        saveAndRender();
+      }
+    }
 
+    function renderList() {
+      const listContainer = document.getElementById('sessionList');
+      listContainer.innerHTML = '';
 
-        <ul class="mainlist">
-            <li>Elemento 1</li>
-            <li>Elemento 2</li>
-            <li>Elemento 3</li>
-            <li>Elemento 4</li>
-        </ul>
+      sessions.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'session-item';
+        li.innerHTML = `
+          <div class="session-info">
+            <input type="checkbox" ${item.isPaid ? 'checked' : ''} onchange="togglePaid(${item.id})">
+            <span class="session-text">${item.title}</span>
+            <span class="paid-badge ${item.isPaid ? 'paid' : 'pending'}">
+              ${item.isPaid ? 'Pagado' : 'Pendiente'}
+            </span>
+          </div>
+          <div class="actions">
+            <button class="btn-action" onclick="editSession(${item.id})" title="Editar">✏️</button>
+            <button class="btn-action" onclick="deleteSession(${item.id})" title="Eliminar">🗑️</button>
+          </div>
+        `;
+        listContainer.appendChild(li);
+      });
+    }
 
-        <ol class="mainlist">
-            <li value="10">Elemento</li>
-            <li>Elemento</li>
-            <li>Elemento</li>
-            <li>Elemento</li>
-            <li>Elemento</li>
-            <li>
-                <ol style="list-style-type: lower-alpha;">
-                    <li>Elemento</li>
-                    <li>Elemento</li>
-                    <li>Elemento</li>
-                </ol>
-            </li>
-        </ol>
-
-
-        <form>
-            <label for="nombre">Nombre: </label>
-            <input id="nombre" name="nombre" placeholder="Felipe Rojas...">
-            <br>
-            <label for="password">Contraseña: </label>
-            <input type="password" id="password" name="password" placeholder="1684164186">
-            <br>
-            <label>Comentarios: </label>
-            <textarea cols="50" rows="20" placeholder="Ingrese un comentario"></textarea>
-            <br>
-            <input type="submit"/>
-            <button type="button">Enviar</button>
-        </form>
-        <h1>Principios lógicos</h1>
-        <h2>Principio de no contradicción:</h2>
-        <p>Es uno de los principios fundamentales de la lógica clásica, establece que dos proposiciones contradictorias no pueden ser verdaderas
-            al mismo tiempo y en el mismo sentido. Es decir, una cosa no puede ser y no ser simultáneamente.</p>
-        <a target="_blank" href="https://es.wikipedia.org/wiki/Principio_de_no_contradicci%C3%B3n">Principio de no contradicción - Wikipedia</a>
-
-        <img src="https://cloud.educaplay.com/recursos/79/2547898/imagen_1_1472439052.jpg"/>
-    </section>
-
-
-
-    <footer>Derechos reservados</footer>
+    // Render inicial al cargar la página
+    renderList();
+  </script>
 </body>
 </html>
