@@ -3,207 +3,189 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Sesiones Fotográficas</title>
+  <title>Iniciar Sesión</title>
   <style>
     :root {
-      --primary: #4f46e5;
-      --bg: #f8fafc;
-      --card: #ffffff;
-      --text: #1e293b;
-      --border: #e2e8f0;
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --border: #334155;
+      --danger: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .form-container {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
       display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 1.25rem;
     }
 
-    input[type="text"] {
-      flex: 1;
-      padding: 12px;
+    .login-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    .login-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background-color: var(--bg-color);
       border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 16px;
+      color: var(--text-main);
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--accent);
     }
 
     button {
-      background-color: var(--primary);
-      color: white;
+      width: 100%;
+      padding: 0.875rem;
+      background-color: var(--accent);
+      color: #ffffff;
       border: none;
-      padding: 12px 20px;
       border-radius: 8px;
-      cursor: pointer;
+      font-size: 1rem;
       font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
 
     button:hover {
-      opacity: 0.9;
+      background-color: var(--accent-hover);
     }
 
-    .session-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
-    .session-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      padding: 14px 16px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .session-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex: 1;
-    }
-
-    .session-text {
-      font-size: 16px;
-      word-break: break-word;
-    }
-
-    .paid-badge {
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-weight: bold;
-    }
-
-    .paid {
-      background-color: #dcfce7;
-      color: #166534;
-    }
-
-    .pending {
-      background-color: #fef3c7;
-      color: #92400e;
-    }
-
-    .actions {
-      display: flex;
-      gap: 6px;
-    }
-
-    .btn-action {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      padding: 4px 8px;
-      color: #64748b;
-    }
-
-    .btn-action:hover {
-      color: var(--text);
+    .error-message {
+      color: var(--danger);
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      text-align: center;
+      min-height: 1.25rem;
     }
   </style>
 </head>
 <body>
 
-  <h1>📷 Sesiones Fotográficas</h1>
-
-  <div class="form-container">
-    <input type="text" id="sessionInput" placeholder="Ej: Sesión retrato - María" />
-    <button onclick="addSession()">Agregar</button>
+  <div class="login-card">
+    <h2>Bienvenido</h2>
+    <p class="subtitle">Ingresa tus credenciales para acceder</p>
+    
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Correo electrónico</label>
+        <input type="email" id="email" required placeholder="tu@email.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button type="submit" id="submit-btn">Ingresar</button>
+    </form>
+    
+    <p id="error-msg" class="error-message"></p>
   </div>
 
-  <ul class="session-list" id="sessionList"></ul>
+  <script type="module">
+  import { supabase } from './supabase.js';
 
-  <script>
-    let sessions = JSON.parse(localStorage.getItem('photo_sessions')) || [];
-
-    function saveAndRender() {
-      localStorage.setItem('photo_sessions', JSON.stringify(sessions));
-      renderList();
+  // 1. Verificar si ya hay una sesión activa al cargar la página
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      window.location.replace('dashboard.html');
     }
+  });
 
-    function addSession() {
-      const input = document.getElementById('sessionInput');
-      const title = input.value.trim();
-      if (!title) return;
+  // 2. Manejar el evento submit
+  const loginForm = document.getElementById('login-form');
+  const errorMsg = document.getElementById('error-msg');
+  const submitBtn = document.getElementById('submit-btn');
 
-      sessions.push({
-        id: Date.now(),
-        title: title,
-        isPaid: false
+  loginForm.addEventListener('submit', async (event) => {
+    // Detener la recarga nativa de la página
+    event.preventDefault();
+    event.stopPropagation();
+
+    errorMsg.textContent = '';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Validando...';
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
       });
 
-      input.value = '';
-      saveAndRender();
-    }
-
-    function togglePaid(id) {
-      sessions = sessions.map(item => 
-        item.id === id ? { ...item, isPaid: !item.isPaid } : item
-      );
-      saveAndRender();
-    }
-
-    function editSession(id) {
-      const item = sessions.find(s => s.id === id);
-      const newTitle = prompt("Editar nombre de la sesión:", item.title);
-      if (newTitle !== null && newTitle.trim() !== "") {
-        item.title = newTitle.trim();
-        saveAndRender();
+      if (error) {
+        console.error('Error de Supabase:', error.message);
+        errorMsg.textContent = 'Correo o contraseña incorrectos.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Ingresar';
+      } else if (data?.session) {
+        // Redirección forzada usando replace para evitar bucles en el historial
+        window.location.replace('dashboard.html');
       }
+    } catch (err) {
+      console.error('Error de red o ejecución:', err);
+      errorMsg.textContent = 'Ocurrió un error inesperado al conectar.';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Ingresar';
     }
-
-    function deleteSession(id) {
-      if (confirm("¿Seguro que deseas eliminar esta sesión?")) {
-        sessions = sessions.filter(s => s.id !== id);
-        saveAndRender();
-      }
-    }
-
-    function renderList() {
-      const listContainer = document.getElementById('sessionList');
-      listContainer.innerHTML = '';
-
-      sessions.forEach(item => {
-        const li = document.createElement('li');
-        li.className = 'session-item';
-        li.innerHTML = `
-          <div class="session-info">
-            <input type="checkbox" ${item.isPaid ? 'checked' : ''} onchange="togglePaid(${item.id})">
-            <span class="session-text">${item.title}</span>
-            <span class="paid-badge ${item.isPaid ? 'paid' : 'pending'}">
-              ${item.isPaid ? 'Pagado' : 'Pendiente'}
-            </span>
-          </div>
-          <div class="actions">
-            <button class="btn-action" onclick="editSession(${item.id})" title="Editar">✏️</button>
-            <button class="btn-action" onclick="deleteSession(${item.id})" title="Eliminar">🗑️</button>
-          </div>
-        `;
-        listContainer.appendChild(li);
-      });
-    }
-
-    // Render inicial al cargar la página
-    renderList();
-  </script>
+  });
+</script>
 </body>
 </html>
