@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteo Bíblico - Monasterio</title>
+    <!-- Fuentes estilo antiguo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=MedievalSharp&family=Philosopher&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Philosopher', serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #1a1614;
+            background-image: 
+                radial-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)),
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.4) 50px, rgba(0,0,0,0.4) 53px),
+                repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(0,0,0,0.4) 80px, rgba(0,0,0,0.4) 83px);
+            color: #2b1810;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #d4af37;
+            text-shadow: 2px 2px 4px #000;
+        }
+
+        h1 {
+            font-family: 'MedievalSharp', cursive;
+            font-size: clamp(1.8rem, 5vw, 2.8rem);
+            margin: 10px 0 5px 0;
+            letter-spacing: 1px;
+        }
+
+        .subtitulo {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            color: #c5a059;
+            margin: 0;
+        }
+
+        /* Simulación de Velas */
+        .vela-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 10px;
+        }
+
+        .flama {
+            width: 12px;
+            height: 20px;
+            background: #ff9d00;
+            border-radius: 50% 50% 20% 20%;
+            box-shadow: 0 0 15px #ff9d00, 0 0 25px #ff5500;
+            animation: parpadeo 0.1s infinite alternate;
+        }
+
+        @keyframes parpadeo {
+            0% { transform: scale(1) rotate(-2deg); opacity: 0.9; }
+            100% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+        }
+
+        /* Layout Responsivo */
+        .contenedor-principal {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .contenedor-principal {
+                flex-direction: row;
+            }
+        }
+
+        /* Tarjetas estilo Pergamino */
+        .pergamino {
+            background: #f4e4bc;
+            background-image: radial-gradient(#e6d3a7 15%, transparent 16%);
+            background-size: 16px 16px;
+            border: 3px solid #8b5a2b;
+            border-radius: 4px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.8), inset 0 0 30px rgba(139, 90, 43, 0.3);
+            flex: 1;
+            position: relative;
+        }
+
+        .pergamino h2 {
+            font-family: 'Cinzel', serif;
+            text-align: center;
+            margin-top: 0;
+            color: #5c2c16;
+            border-bottom: 2px dotted #8b5a2b;
+            padding-bottom: 8px;
+            font-size: 1.4rem;
+        }
+
+        /* Estilos de Pestañas (Tabs) */
+        .tabs-header {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #8b5a2b;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px 5px;
+            background: #d4c197;
+            color: #4a2e16;
+            border: 1px solid #8b5a2b;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            background: #8b5a2b;
+            color: #f4e4bc;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Formularios y Botones */
+        .input-box {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            background: #fff8eb;
+            border: 1px solid #8b5a2b;
+            border-radius: 3px;
+            font-family: 'Philosopher', serif;
+            font-size: 1rem;
+            color: #2b1810;
+        }
+
+        input[type="text"]:focus {
+            outline: 2px solid #c5a059;
+        }
+
+        button {
+            font-family: 'Cinzel', serif;
+            font-weight: bold;
+            cursor: pointer;
+            border: 1px solid #4a2e16;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-agregar {
+            background: #8b5a2b;
+            color: #fff8eb;
+            padding: 0 15px;
+        }
+
+        .btn-agregar:hover {
+            background: #6d441f;
+        }
+
+        .btn-sortear {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to bottom, #a62b2b, #7a1f1f);
+            color: #f4e4bc;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px;
+            box-shadow: 0 3px 0 #4a1313;
+        }
+
+        .btn-sortear:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #4a1313;
+        }
+
+        /* Lista de Personas */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            max-height: 180px;
+            overflow-y: auto;
+            border: 1px inset #d4af37;
+            background: rgba(255, 248, 235, 0.5);
+        }
+
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            border-bottom: 1px dashed #c5a059;
+            font-size: 1.05rem;
+        }
+
+        .btn-eliminar {
+            background: transparent;
+            color: #a62b2b;
+            border: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 2px 6px;
+        }
+
+        .btn-eliminar:hover {
+            color: #e74c3c;
+        }
+
+        /* Cajón de Resultados */
+        .resultado-box {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff8eb;
+            border: 2px solid #c5a059;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a2e16;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="vela-container">
+            <div class="flama"></div>
+            <div class="flama"></div>
+        </div>
+        <h1>Scriptorium Bíblico</h1>
+        <p class="subtitulo">Sorteo de Enseñanza y Discipulado</p>
+    </header>
+
+    <div class="contenedor-principal">
+        <!-- SECCIÓN PARTICIPANTES -->
+        <section class="pergamino">
+            <h2>Hermanos / Participantes</h2>
+            <div class="input-box">
+                <input type="text" id="nombreInput" placeholder="Nombre del participante...">
+                <button class="btn-agregar" onclick="agregarPersona()">Añadir</button>
+            </div>
+            
+            <ul id="listaPersonas"></ul>
+
+            <button class="btn-sortear" onclick="sortearPersona()">Sortear Persona</button>
+            <div id="resultadoPersona" class="resultado-box">---</div>
+        </section>
+
+        <!-- SECCIÓN ESTUDIO (CON PESTAÑAS) -->
+        <section class="pergamino">
+            <!-- Encabezados de Pestañas -->
+            <div class="tabs-header">
+                <button class="tab-btn active" onclick="cambiarPestana('preguntas')">Preguntas</button>
+                <button class="tab-btn" onclick="cambiarPestana('temas')">Temas Directos</button>
+            </div>
+
+            <!-- Pestaña 1: Preguntas -->
+            <div id="tab-preguntas" class="tab-content active">
+                <p style="text-align: center; font-size: 0.9rem; color: #6d441f; margin-top: -5px;">Preguntas difíciles y apologética</p>
+                <button class="btn-sortear" onclick="sortearPregunta()" style="margin-top: 15px;">Sortear Pregunta</button>
+                <div id="resultadoPregunta" class="resultado-box" style="min-height: 90px;">---</div>
+            </div>
+
+            <!-- Pestaña 2: Temas Directos -->
+            <div id="tab-temas" class="tab-content">
+                <p style="text-align: center; font-size: 0.9rem; color: #6d441f; margin-top: -5px;">Doctrinas y conceptos generales</p>
+                <button class="btn-sortear" onclick="sortearTemaDirecto()" style="margin-top: 15px;">Sortear Tema</button>
+                <div id="resultadoTemaDirecto" class="resultado-box" style="min-height: 90px;">---</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // LISTA 1: PREGUNTAS (Agrega las tuyas aquí)
+        const listaPreguntas = [
+            // LISTA DE PREGUNTAS FRECUENTES Y APOLOGÉTICA (Inspirada en GotQuestions y Cliffe Knechtle)
+        // --- DIOS, SU EXISTENCIA Y EL MAL (Las Preguntas Difíciles) ---
+        "Si Dios es amoroso y todopoderoso, ¿por qué permite el sufrimiento y el mal en el mundo?",
+        "¿Quién creó a Dios? Si todo tiene una causa, ¿qué causó a Dios?",
+        "¿Cómo saber que Dios existe sin depender únicamente de la fe a ciegas?",
+        "¿Por qué Dios parece tan enojado en el Antiguo Testamento pero tan amoroso en el Nuevo?",
+        "¿Cómo un Dios amoroso puede enviar a alguien al infierno?",
+        "¿Es injusto que las personas que nunca escucharon el Evangelio vayan al infierno?",
+        "Si Dios sabe todo lo que haré, ¿realmente tengo libre albedrío?",
+        "¿Por qué Dios permite que a la gente buena le pasen cosas malas?",
+
+        // --- JESÚS Y LA SALVACIÓN ---
+        "¿Es Jesús el único camino a Dios o todas las religiones llevan al mismo lugar?",
+        "¿Qué pruebas históricas (fuera de la Biblia) dicen que Jesús realmente existió?",
+        "¿Puedo ir al cielo por ser buena persona?",
+        "¿Por qué tuvo que morir Jesús? ¿No podía Dios simplemente perdonarnos sin sangre?",
+        "Si ya soy salvo, ¿puedo pecar todo lo que quiera porque Dios me va a perdonar?",
+        "¿La frase 'una vez salvo, siempre salvo' es bíblica?",
+        "¿Qué pasa si muero con un pecado sin confesar o pedir perdón?",
+        "¿Qué es el 'pecado imperdonable' y cómo sé si lo he cometido?",
+
+        // --- LA BIBLIA Y SU AUTENTICIDAD ---
+        "¿Cómo sé que la Biblia es la Palabra de Dios y no solo un libro escrito por hombres?",
+        "¿Por qué la Biblia protestante tiene 66 libros y la católica tiene 73?",
+        "¿Tiene la Biblia contradicciones o errores científicos e históricos?",
+        "¿Cómo sabemos que los manuscritos bíblicos no fueron alterados a lo largo de los siglos?",
+        "¿La Biblia apoya la esclavitud o el machismo?",
+        "¿Por qué los evangelios apócrifos no están en el canon bíblico?",
+
+        // --- CIENCIA, EVOLUCIÓN Y CREACIÓN ---
+        "¿Son la fe en Dios y la ciencia contradictorias?",
+        "¿Qué enseña la Biblia sobre la creación versus la teoría de la evolución?",
+        "¿Existen los dinosaurios en la Biblia y encajan con la fe cristiana?",
+
+        // --- DILEMAS MORALES Y SOCIEDAD ACTUAL ---
+        "¿Qué dice la Biblia sobre la homosexualidad y cómo debe responder un cristiano?",
+        "¿Por qué Dios prohíbe las relaciones sexuales antes del matrimonio?",
+        "¿Es pecado el consumo de alcohol según las Escrituras?",
+        "¿Cuál es la postura bíblica sobre el aborto?",
+        "¿Por qué hay tantas denominaciones e iglesias cristianas si solo hay una Biblia?",
+        "¿Por qué hay tantos 'cristianos' hipócritas y cómo responder ante sus fallas?",
+
+        // --- LO SOBRENATURAL Y EL MÁS ALLÁ ---
+        "¿Qué pasa inmediatamente después de que una persona muere?",
+        "¿Es real la posesión demoníaca y cómo opera el mundo espiritual?",
+        "¿Pueden los vivos comunicarse con los muertos?",
+        "¿Los ángeles y los demonios son seres reales o solo símbolos del bien y del mal?"
+        ];
+
+        // LISTA 2: TEMAS DIRECTOS (Agrega los tuyos aquí)
+        const listaTemasDirectos = [
+            "El pecado"
+        ];
+
+        let personas = [];
+
+        // CAMBIO DE PESTAÑAS
+        function cambiarPestana(nombrePestana) {
+            const btns = document.querySelectorAll('.tab-btn');
+            const contents = document.querySelectorAll('.tab-content');
+
+            btns.forEach(btn => btn.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            if (nombrePestana === 'preguntas') {
+                btns[0].classList.add('active');
+                document.getElementById('tab-preguntas').classList.add('active');
+            } else {
+                btns[1].classList.add('active');
+                document.getElementById('tab-temas').classList.add('active');
+            }
+        }
+
+        // GESTIÓN DE PERSONAS
+        function agregarPersona() {
+            const input = document.getElementById("nombreInput");
+            const nombre = input.value.trim();
+
+            if (nombre !== "") {
+                personas.push(nombre);
+                input.value = "";
+                actualizarListaPersonas();
+            }
+        }
+
+        function eliminarPersona(index) {
+            personas.splice(index, 1);
+            actualizarListaPersonas();
+        }
+
+        function actualizarListaPersonas() {
+            const ul = document.getElementById("listaPersonas");
+            ul.innerHTML = "";
+            personas.forEach((persona, index) => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <span>${persona}</span>
+                    <button class="btn-eliminar" onclick="eliminarPersona(${index})" title="Eliminar">✕</button>
+                `;
+                ul.appendChild(li);
+            });
+        }
+
+        // EFECTO DE SONIDO (Personalizable)
+        function reproducirSonidoGanador() {
+            // new Audio('ganador.mp3').play();
+            console.log("Sonido: Selección realizada.");
+        }
+
+        // FUNCIONES DE SORTEO INSTANTÁNEO (Sin animación)
+        function sortearPersona() {
+            if (personas.length === 0) {
+                alert("Por favor, agrega al menos una persona.");
+                return;
+            }
+            const ganador = personas[Math.floor(Math.random() * personas.length)];
+            document.getElementById("resultadoPersona").textContent = ganador;
+            reproducirSonidoGanador();
+        }
+
+        function sortearPregunta() {
+            if (listaPreguntas.length === 0) {
+                alert("No hay preguntas en la lista.");
+                return;
+            }
+            const pregunta = listaPreguntas[Math.floor(Math.random() * listaPreguntas.length)];
+            document.getElementById("resultadoPregunta").textContent = pregunta;
+            reproducirSonidoGanador();
+        }
+
+        function sortearTemaDirecto() {
+            if (listaTemasDirectos.length === 0) {
+                alert("No hay temas directos en la lista.");
+                return;
+            }
+            const tema = listaTemasDirectos[Math.floor(Math.random() * listaTemasDirectos.length)];
+            document.getElementById("resultadoTemaDirecto").textContent = tema;
+            reproducirSonidoGanador();
+        }
+
+        // Enter para agregar personas rápido
+        document.getElementById("nombreInput").addEventListener("keypress", function(e) {
+            if (e.key === "Enter") {
+                agregarPersona();
+            }
+        });
+    </script>
+
+</body>
+</html>
